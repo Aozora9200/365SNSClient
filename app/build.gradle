@@ -1,0 +1,86 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.aozora.miskkey'
+    compileSdk 35
+    
+    defaultConfig {
+        applicationId "com.aozora.miskkey"
+        minSdk 27
+        targetSdk 30
+        versionCode 12
+        versionName "1.2"
+        multiDexEnabled true
+        proguardFiles += 'proguard-rules.pro'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('test.jks')
+            storePassword 'test1234'
+            keyAlias 'key0'
+            keyPassword 'test1234'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+        }
+    }
+
+    packagingOptions {
+        resources {
+            excludes += [
+                'META-INF/LICENSE',
+                'META-INF/LICENSE.txt',
+                'META-INF/NOTICE'
+            ]
+        }
+    }
+
+    lint {
+        disable += [
+            'ExpiredTargetSdkVersion',
+            'NewApi',
+            'Range',
+            'SetTextI18n',
+            'ScopedStorage',
+            'FieldCanBeLocal',
+            'GradleDependency'
+        ]
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
+}
+
+dependencies {
+    implementation 'androidx.startup:startup-runtime:1.2.0'
+    implementation "androidx.emoji2:emoji2:1.4.0"
+    implementation 'androidx.profileinstaller:profileinstaller:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.webkit:webkit:1.14.0'
+    implementation 'androidx.activity:activity:1.10.1'
+}
+
