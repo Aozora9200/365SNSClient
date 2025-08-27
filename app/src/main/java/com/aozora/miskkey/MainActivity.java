@@ -89,7 +89,7 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private static final String BASE_URL = "https://365sns.f5.si/";
+    private static final String BASE_URL = "https://sns365.f5.si/";
 
     private static final long ICON_ANIM_MS = 600L;
     private static final long SPLASH_FADE_MS = 400L;
@@ -617,7 +617,7 @@ public class MainActivity extends AppCompatActivity {
             Uri u = Uri.parse(url);
             String host = u.getHost();
             if (host == null) return false;
-            if (host.contains("365sns.f5.si")) return true;
+            if (host.contains("sns365.f5.si")) return true;
         } catch (Exception ignored) {}
         return false;
     }
@@ -793,10 +793,20 @@ public class MainActivity extends AppCompatActivity {
     private boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm == null) return false;
-        Network n = cm.getActiveNetwork();
-        if (n == null) return false;
-        NetworkCapabilities c = cm.getNetworkCapabilities(n);
-        return c != null && c.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && c.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+
+        // API 23 以降では getActiveNetwork() を使用
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Network n = cm.getActiveNetwork();
+            if (n == null) return false;
+            NetworkCapabilities c = cm.getNetworkCapabilities(n);
+            return c != null && c.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && c.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+        }
+
+        // API 23 未満では getNetworkInfo() を使用
+        else {
+            android.net.NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            return networkInfo != null && networkInfo.isConnected();
+        }
     }
 
     private boolean isValidUrl(String url) {
